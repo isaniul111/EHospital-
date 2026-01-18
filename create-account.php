@@ -1,48 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/animations.css">  
-    <link rel="stylesheet" href="css/main.css">  
-    <link rel="stylesheet" href="css/signup.css">
-        
-    <title>Create Account</title>
-    <style>
-        .container{
-            animation: transitionIn-X 0.5s;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account | eHospital</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(120deg,#020617,#0f172a);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* ===== CARD ===== */
+.card{
+    width:480px;
+    background:#020617;
+    border-radius:18px;
+    padding:40px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.6);
+    animation:fadeUp 0.8s ease;
+    color:white;
+}
+
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(40px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+.card h1{
+    font-size:28px;
+    margin-bottom:6px;
+}
+
+.card .sub{
+    font-size:14px;
+    color:#94a3b8;
+    margin-bottom:25px;
+}
+
+/* ===== FORM ===== */
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    font-size:13px;
+    color:#cbd5f5;
+    display:block;
+    margin-bottom:6px;
+}
+
+.form-group input{
+    width:100%;
+    padding:11px 12px;
+    border-radius:8px;
+    border:1px solid #1e293b;
+    background:#020617;
+    color:white;
+    outline:none;
+    transition:0.3s;
+}
+
+.form-group input:focus{
+    border-color:#34d399;
+    box-shadow:0 0 0 2px rgba(52,211,153,0.2);
+}
+
+/* ===== BUTTONS ===== */
+.actions{
+    display:flex;
+    gap:12px;
+    margin-top:10px;
+}
+
+.btn{
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn-primary{
+    background:#34d399;
+    color:#064e3b;
+}
+
+.btn-primary:hover{
+    background:#10b981;
+    box-shadow:0 0 15px rgba(52,211,153,0.5);
+}
+
+.btn-soft{
+    background:#020617;
+    color:#cbd5e1;
+    border:1px solid #1e293b;
+}
+
+.btn-soft:hover{
+    border-color:#64748b;
+}
+
+/* ===== FOOTER ===== */
+.footer{
+    margin-top:18px;
+    font-size:13px;
+    color:#94a3b8;
+    text-align:center;
+}
+
+.footer a{
+    color:#34d399;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.footer a:hover{
+    text-decoration:underline;
+}
+
+/* ===== ERROR ===== */
+.error{
+    margin:10px 0;
+    font-size:13px;
+    color:#fb7185;
+    text-align:center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:520px){
+    .card{width:90%;}
+}
+</style>
 </head>
+
 <body>
+
 <?php
-
-//learn from w3schools.com
-//Unset all the server side variables
-
 session_start();
-
 $_SESSION["user"]="";
 $_SESSION["usertype"]="";
 
-// Set the new timezone
 date_default_timezone_set('Asia/Kolkata');
-$date = date('Y-m-d');
+$_SESSION["date"]=date('Y-m-d');
 
-$_SESSION["date"]=$date;
-
-
-//import database
 include("connection.php");
 
-
-
-
-
 if($_POST){
-
-    $result= $database->query("select * from webuser");
 
     $fname=$_SESSION['personal']['fname'];
     $lname=$_SESSION['personal']['lname'];
@@ -50,131 +168,81 @@ if($_POST){
     $address=$_SESSION['personal']['address'];
     $nic=$_SESSION['personal']['nic'];
     $dob=$_SESSION['personal']['dob'];
+
     $email=$_POST['newemail'];
     $tele=$_POST['tele'];
     $newpassword=$_POST['newpassword'];
     $cpassword=$_POST['cpassword'];
-    
-    if ($newpassword==$cpassword){
-        $sqlmain= "select * from webuser where email=?;";
-        $stmt = $database->prepare($sqlmain);
+
+    if($newpassword==$cpassword){
+
+        $stmt=$database->prepare("select * from webuser where email=?");
         $stmt->bind_param("s",$email);
         $stmt->execute();
-        $result = $stmt->get_result();
+        $result=$stmt->get_result();
+
         if($result->num_rows==1){
-            $error='<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Already have an account for this Email address.</label>';
+            $error="Already have an account for this email.";
         }else{
-            //TODO
-            $database->query("insert into patient(pemail,pname,ppassword, paddress, pnic,pdob,ptel) values('$email','$name','$newpassword','$address','$nic','$dob','$tele');");
+            $database->query("insert into patient(pemail,pname,ppassword,paddress,pnic,pdob,ptel)
+                              values('$email','$name','$newpassword','$address','$nic','$dob','$tele')");
             $database->query("insert into webuser values('$email','p')");
 
-            //print_r("insert into patient values($pid,'$email','$fname','$lname','$newpassword','$address','$nic','$dob','$tele');");
             $_SESSION["user"]=$email;
             $_SESSION["usertype"]="p";
             $_SESSION["username"]=$fname;
 
             header('Location: patient/index.php');
-            $error='<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;"></label>';
         }
-        
     }else{
-        $error='<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Password Conformation Error! Reconform Password</label>';
+        $error="Password confirmation does not match!";
     }
-
-
-
-    
-}else{
-    //header('location: signup.php');
-    $error='<label for="promter" class="form-label"></label>';
 }
-
 ?>
 
+<div class="card">
+    <h1>Create Account</h1>
+    <div class="sub">Now set your login credentials</div>
 
-    <center>
-    <div class="container">
-        <table border="0" style="width: 69%;">
-            <tr>
-                <td colspan="2">
-                    <p class="header-text">Let's Get Started</p>
-                    <p class="sub-text">It's Okey, Now Create User Account.</p>
-                </td>
-            </tr>
-            <tr>
-                <form action="" method="POST" >
-                <td class="label-td" colspan="2">
-                    <label for="newemail" class="form-label">Email: </label>
-                </td>
-            </tr>
-            <tr>
-                <td class="label-td" colspan="2">
-                    <input type="email" name="newemail" class="input-text" placeholder="Email Address" required>
-                </td>
-                
-            </tr>
-            <tr>
-                <td class="label-td" colspan="2">
-                    <label for="tele" class="form-label">Mobile Number: </label>
-                </td>
-            </tr>
-            <tr>
-                <td class="label-td" colspan="2">
-                    <input type="tel" name="tele" class="input-text"  placeholder="ex: 0712345678" pattern="[0]{1}[0-9]{9}" >
-                </td>
-            </tr>
-            <tr>
-                <td class="label-td" colspan="2">
-                    <label for="newpassword" class="form-label">Create New Password: </label>
-                </td>
-            </tr>
-            <tr>
-                <td class="label-td" colspan="2">
-                    <input type="password" name="newpassword" class="input-text" placeholder="New Password" required>
-                </td>
-            </tr>
-            <tr>
-                <td class="label-td" colspan="2">
-                    <label for="cpassword" class="form-label">Conform Password: </label>
-                </td>
-            </tr>
-            <tr>
-                <td class="label-td" colspan="2">
-                    <input type="password" name="cpassword" class="input-text" placeholder="Conform Password" required>
-                </td>
-            </tr>
-     
-            <tr>
-                
-                <td colspan="2">
-                    <?php echo $error ?>
+    <form method="POST">
 
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    <input type="reset" value="Reset" class="login-btn btn-primary-soft btn" >
-                </td>
-                <td>
-                    <input type="submit" value="Sign Up" class="login-btn btn-primary btn">
-                </td>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="newemail" placeholder="example@mail.com" required>
+        </div>
 
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <br>
-                    <label for="" class="sub-text" style="font-weight: 280;">Already have an account&#63; </label>
-                    <a href="login.php" class="hover-link1 non-style-link">Login</a>
-                    <br><br><br>
-                </td>
-            </tr>
+        <div class="form-group">
+            <label>Mobile Number (Bangladesh)</label>
+            <input type="tel" 
+                   name="tele" 
+                   placeholder="ex: 01712345678"
+                   pattern="^01[3-9][0-9]{8}$"
+                   title="Enter valid BD number (ex: 01712345678)"
+                   required>
+        </div>
 
-                    </form>
-            </tr>
-        </table>
+        <div class="form-group">
+            <label>Create Password</label>
+            <input type="password" name="newpassword" required>
+        </div>
 
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" name="cpassword" required>
+        </div>
+
+        <?php if(!empty($error)){ echo "<div class='error'>$error</div>"; } ?>
+
+        <div class="actions">
+            <button type="reset" class="btn btn-soft">Reset</button>
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+        </div>
+    </form>
+
+    <div class="footer">
+        Already have an account? <a href="login.php">Login</a>
     </div>
-</center>
+</div>
+
 </body>
 </html>

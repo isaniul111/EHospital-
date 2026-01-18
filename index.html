@@ -8,222 +8,131 @@
 
 <style>
 /* ===== GLOBAL ===== */
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-    height: 100vh;
-    background-color: #0f172a; /* Deep Navy/Slate */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    color: #e2e8f0;
-    font-family: 'Open Sans', sans-serif;
-    position: relative;
+    height:100vh;
+    background:#0f172a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    color:#e2e8f0;
+    font-family:'Open Sans', sans-serif;
 }
 
-/* ===== HEARTBEAT BACKGROUND ANIMATION ===== */
-.ecg-line {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: rgba(52, 211, 153, 0.1); /* Faint green line */
-    transform: translateY(-50%);
-    z-index: 0;
+/* ===== ECG SYSTEM ===== */
+.ecg-area{
+    position:absolute;
+    top:50%;
+    left:0;
+    width:100%;
+    height:120px;
+    transform:translateY(-50%);
+    z-index:1;
 }
 
-.ecg-blip {
-    position: absolute;
-    top: 50%;
-    left: -100px;
-    width: 150px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #34d399, transparent);
-    transform: translateY(-50%);
-    box-shadow: 0 0 20px #34d399;
-    animation: heartbeat 4s infinite linear;
-    z-index: 1;
+.ecg-area svg{
+    width:100%;
+    height:100%;
+}
+
+.ecg-line{
+    fill:none;
+    stroke:#34d399;
+    stroke-width:3;
+    filter:drop-shadow(0 0 10px #34d399);
+    stroke-dasharray: 200 800;
+    animation: bipMove 6s linear infinite;
+}
+
+/* 4 bip then pause */
+@keyframes bipMove{
+    0%   { stroke-dashoffset: 1000; }
+    60%  { stroke-dashoffset: 0; }   /* 4 bip finished */
+    100% { stroke-dashoffset: -1000;} /* flat move */
 }
 
 /* ===== CARD ===== */
-.container {
-    position: relative;
-    z-index: 2;
-    width: 800px; /* Wider layout */
-    display: flex;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border-radius: 20px;
-    overflow: hidden;
-    background: #1e293b; /* Lighter Slate */
-    border: 1px solid #334155;
-    animation: fadeIn 1.2s ease;
+.container{
+    position:relative;
+    z-index:2;
+    width:800px;
+    display:flex;
+    background:#1e293b;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 25px 50px rgba(0,0,0,0.5);
 }
 
-/* Split layout: Image/Brand side and Content side */
-.brand-side {
-    width: 40%;
-    background: linear-gradient(180deg, #059669, #047857); /* Emerald Green Gradient */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 30px;
-    text-align: center;
-    color: white;
+.brand-side{
+    width:40%;
+    background:linear-gradient(180deg,#059669,#047857);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
 }
 
-.content-side {
-    width: 60%;
-    padding: 50px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.content-side{
+    width:60%;
+    padding:50px;
 }
 
-/* ===== TYPOGRAPHY ===== */
-.brand-logo {
-    font-family: 'Merriweather', serif;
-    font-size: 38px;
-    margin-bottom: 10px;
-}
+/* ===== TEXT ===== */
+.brand-logo{font-size:38px;font-family:'Merriweather',serif;}
+.brand-quote{font-size:14px;opacity:0.8;margin-top:10px;}
+h1{margin-bottom:15px;}
+p{color:#94a3b8;margin-bottom:25px;}
 
-.brand-quote {
-    font-style: italic;
-    font-size: 14px;
-    opacity: 0.8;
-    margin-top: 15px;
-}
-
-h1 {
-    font-family: 'Merriweather', serif;
-    color: #f8fafc;
-    font-size: 28px;
-    margin-bottom: 15px;
-}
-
-p {
-    color: #94a3b8;
-    line-height: 1.6;
-    margin-bottom: 30px;
-    font-size: 15px;
-}
-
-/* ===== ELEMENTS ===== */
-.pulse-icon {
-    font-size: 50px;
-    margin-bottom: 10px;
-    animation: pulse 2s infinite;
-}
-
-.btn-group {
-    display: flex;
-    gap: 15px;
-}
-
-.btn {
-    padding: 12px 24px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    text-align: center;
-}
-
-.btn-primary {
-    background-color: #34d399; /* Emerald */
-    color: #064e3b;
-    flex: 2;
-}
-
-.btn-primary:hover {
-    background-color: #10b981;
-    box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
-}
-
-.btn-secondary {
-    border: 1px solid #475569;
-    color: #cbd5e1;
-    flex: 1;
-}
-
-.btn-secondary:hover {
-    border-color: #94a3b8;
-    color: white;
-}
-
-.footer-credit {
-    margin-top: 30px;
-    font-size: 12px;
-    color: #475569;
-    text-align: right;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes heartbeat {
-    0% { left: -10%; opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { left: 110%; opacity: 0; }
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+/* ===== BUTTON ===== */
+.btn-group{display:flex;gap:15px;}
+.btn{padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;}
+.btn-primary{background:#34d399;color:#064e3b;}
+.btn-secondary{border:1px solid #475569;color:#cbd5e1;}
 
 /* ===== RESPONSIVE ===== */
-@media(max-width: 768px){
-    .container { flex-direction: column; width: 90%; }
-    .brand-side, .content-side { width: 100%; padding: 30px; }
-    .brand-side { padding: 40px 20px; }
+@media(max-width:768px){
+.container{flex-direction:column;width:90%;}
+.brand-side,.content-side{width:100%;}
 }
 </style>
 </head>
 
 <body>
 
-    <div class="ecg-line"></div>
-    <div class="ecg-blip"></div>
+<!-- ECG -->
+<div class="ecg-area">
+<svg viewBox="0 0 1200 100" preserveAspectRatio="none">
+<path class="ecg-line" d="
+M0 50 L100 50 
+L130 50 L145 20 L160 80 L175 50
+L220 50 L235 20 L250 80 L265 50
+L310 50 L325 20 L340 80 L355 50
+L400 50 L415 20 L430 80 L445 50
+L1200 50"/>
+</svg>
+</div>
 
-    <div class="container">
-        
-        <div class="brand-side">
-            <div class="pulse-icon">✚</div>
-            <div class="brand-logo">EHospital</div>
-            <div class="brand-quote">"Technology meets Compassion."</div>
-        </div>
+<!-- CARD -->
+<div class="container">
+<div class="brand-side">
+<div style="font-size:50px">✚</div>
+<div class="brand-logo">eHospital</div>
+<div class="brand-quote">Technology meets Compassion</div>
+</div>
 
-        <div class="content-side">
-            <h1>Patient Portal</h1>
-            <p>
-                Welcome to the EHospital digital gateway. 
-                Securely manage your appointments, view lab reports, and consult with specialists via our encrypted channel.
-            </p>
+<div class="content-side">
+<h1>Patient Portal</h1>
+<p>Securely manage appointments, reports and consult doctors online.</p>
 
-            <div class="btn-group">
-                <a href="login.php" class="btn btn-primary">Book Now</a>
-                <a href="login.php" class="btn btn-secondary">Login</a>
-            </div>
-
-            <div class="footer-credit">
-                Design & Dev by Saniul
-            </div>
-        </div>
-
-    </div>
+<div class="btn-group">
+<a href="login.php" class="btn btn-primary">Book Now</a>
+<a href="login.php" class="btn btn-secondary">Login</a>
+</div>
+</div>
+</div>
 
 </body>
 </html>
